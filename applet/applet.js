@@ -83,6 +83,16 @@ const DISPLAY_ICON_AND_TEXT = 2;
 
 const IMAGE_PREVIEW_HEIGHT = 28;
 
+/*
+ * A clipboard read whose owner never answers is treated as failed after this
+ * time.  Five seconds is generous: transfers, even of large images, normally
+ * complete well inside a second.
+ */
+const CAPTURE_TIMEOUT_MS = 5000;
+
+/* The same capture error is reported to the user at most this often. */
+const ERROR_NOTIFY_COOLDOWN_MS = 60 * 1000;
+
 const MODE_NONE = 'none';
 const MODE_SESSION = 'session';
 const MODE_PASSWORD = 'password';
@@ -288,6 +298,9 @@ class ClipboardApplet extends Applet.TextIconApplet {
         this._refreshInProgress = false;
         this._suppressCapture = false;
         this._destroyed = false;
+        this._captureSerial = 0;
+        this._lastErrorKey = null;
+        this._lastErrorTime = 0;
 
         this._locked = false;
         this._needsNewPassword = false;
@@ -871,7 +884,14 @@ class ClipboardApplet extends Applet.TextIconApplet {
         if (this._locked)
             return;
 
-        this.registry.write(this._persistedEntries());
+        try {
+            this.registry.write(this._persistedEntries());
+        }
+        catch (e) {
+            /* A full disk or bad permissions must not break capture. */
+            global.logError('[' + UUID + '] could not save history: ' + e);
+            this._notifyError(_("Could not save the clipboard history"), e.message);
+        }
     }
 
     /*
@@ -1518,10 +1538,35 @@ class ClipboardApplet extends Applet.TextIconApplet {
 
         this._refreshInProgress = true;
 
-        this._readClipboard((mimetype, bytes) => {
+        /*
+         * A hung read (its owner never answering the transfer) used to leave
+         * the busy flag set forever, silently stopping all capture from then
+         * on.  The watchdog releases it instead, tells the user and retries;
+         * the serial keeps a fired watchdog from releasing a newer, healthy
+         * read in flight.
+         */
+        const serial = ++this._captureSerial;
+        this._addTimeout(CAPTURE_TIMEOUT_MS, () => {
+            if (!this._refreshInProgress || this._captureSerial !== serial)
+                return;
+            this._refreshInProgress = false;
+            this._notifyError(_("Reading the clipboard timed out"),
+                              _("The app it was copied from may have stopped responding. Trying again."));
+            this._queueRefresh();
+        });
+
+        const onRead = (mimetype, bytes, error) => {
             this._refreshInProgress = false;
 
-            if (this._destroyed || !mimetype || !bytes || bytes.get_size() === 0)
+            if (this._destroyed)
+                return;
+
+            if (error) {
+                this._notifyError(_("Could not read the clipboard"), error);
+                return;
+            }
+
+            if (!mimetype || !bytes || bytes.get_size() === 0)
                 return;
 
             let entry;
@@ -1551,6 +1596,7 @@ class ClipboardApplet extends Applet.TextIconApplet {
                     }
                     catch (e) {
                         global.logError('[' + UUID + '] could not cache image: ' + e);
+                        this._notifyError(_("Could not store the copied image"), e.message);
                         return;
                     }
                 }
@@ -1574,22 +1620,53 @@ class ClipboardApplet extends Applet.TextIconApplet {
 
             if (this.notifyOnCopy)
                 Main.notify(_("Clipboard Manager"), truncate(entry.getStringValue(), 60));
-        });
+        };
+
+        try {
+            this._readClipboard(onRead);
+        }
+        catch (e) {
+            this._refreshInProgress = false;
+            this._notifyError(_("Could not read the clipboard"), e.message);
+        }
+    }
+
+    /*
+     * Reports a capture failure to the user and to the Cinnamon log.  Never
+     * throws and never blocks capture: _notifyError is on the path that keeps
+     * recording working, so it must always return.  The cooldown holds a
+     * recurring problem (a frozen clipboard owner, a failing disk) to at most
+     * one notification a minute.
+     */
+    _notifyError (headline, details) {
+        const now = new Date().getTime();
+        const key = headline + '\n' + (details || '');
+
+        if (key === this._lastErrorKey && now - this._lastErrorTime < ERROR_NOTIFY_COOLDOWN_MS)
+            return;
+        this._lastErrorKey = key;
+        this._lastErrorTime = now;
+
+        global.logWarning('[' + UUID + '] ' + headline + (details ? ': ' + details : ''));
+        Main.notify(headline, details || '');
     }
 
     /*
      * Reads the clipboard, preferring text over images.  Calls back with
-     * (mimetype, GLib.Bytes) or (null, null).
+     * (mimetype, GLib.Bytes, null) on success, (null, null, reason) when the
+     * read failed, or (null, null, null) when the clipboard offers nothing
+     * recordable.  Failures always arrive as a callback, never as an
+     * exception: the caller arms its busy flag before the transfer starts.
      */
     _readClipboard (callback) {
         if (!this._selection) {
             St.Clipboard.get_default().get_text(St.ClipboardType.CLIPBOARD, (clipboard, text) => {
                 if (!text) {
-                    callback(null, null);
+                    callback(null, null, null);
                     return;
                 }
                 callback('text/plain;charset=utf-8',
-                         new GLib.Bytes(new TextEncoder().encode(text)));
+                         new GLib.Bytes(new TextEncoder().encode(text)), null);
             });
             return;
         }
@@ -1599,33 +1676,38 @@ class ClipboardApplet extends Applet.TextIconApplet {
             available = this._selection.get_mimetypes(Meta.SelectionType.SELECTION_CLIPBOARD) || [];
         }
         catch (e) {
-            callback(null, null);
+            callback(null, null, e.message);
             return;
         }
 
         const mimetype = READ_MIMETYPES.find(type => available.indexOf(type) !== -1);
         if (!mimetype) {
-            callback(null, null);
+            callback(null, null, null);
             return;
         }
 
         const stream = Gio.MemoryOutputStream.new_resizable();
 
-        this._selection.transfer_async(Meta.SelectionType.SELECTION_CLIPBOARD,
-                                       mimetype, -1, stream, null, (selection, result) => {
-            try {
-                selection.transfer_finish(result);
-                stream.close(null);
-                /* UTF8_STRING is really UTF-8 text; normalise it. */
-                const type = mimetype === 'UTF8_STRING' || mimetype === 'STRING'
-                    ? 'text/plain;charset=utf-8'
-                    : mimetype;
-                callback(type, stream.steal_as_bytes());
-            }
-            catch (e) {
-                callback(null, null);
-            }
-        });
+        try {
+            this._selection.transfer_async(Meta.SelectionType.SELECTION_CLIPBOARD,
+                                           mimetype, -1, stream, null, (selection, result) => {
+                try {
+                    selection.transfer_finish(result);
+                    stream.close(null);
+                    /* UTF8_STRING is really UTF-8 text; normalise it. */
+                    const type = mimetype === 'UTF8_STRING' || mimetype === 'STRING'
+                        ? 'text/plain;charset=utf-8'
+                        : mimetype;
+                    callback(type, stream.steal_as_bytes(), null);
+                }
+                catch (e) {
+                    callback(null, null, e.message);
+                }
+            });
+        }
+        catch (e) {
+            callback(null, null, e.message);
+        }
     }
 
     _setClipboard (entry) {

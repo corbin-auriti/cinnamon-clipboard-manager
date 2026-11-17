@@ -3,7 +3,7 @@
     "name": "Clipboard Manager",
     "description": "Clipboard history with pinning, search, images and a Super+V popup. Port of the GNOME Shell Clipboard Indicator extension.",
     "icon": "edit-paste",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "max-instances": 1,
     "cinnamon-version": ["6.0", "6.2", "6.4", "6.6", "6.8"]
 }

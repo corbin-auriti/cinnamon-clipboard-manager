@@ -1,0 +1,401 @@
+{
+    "layout": {
+        "type": "layout",
+        "pages": [
+            "pageGeneral",
+            "pageStorage",
+            "pageAppearance",
+            "pageShortcuts"
+        ],
+        "pageGeneral": {
+            "type": "page",
+            "title": "General",
+            "sections": [
+                "sectionHistory",
+                "sectionBehaviour",
+                "sectionPrivacy"
+            ]
+        },
+        "pageAppearance": {
+            "type": "page",
+            "title": "Appearance",
+            "sections": [
+                "sectionPanel",
+                "sectionMenu",
+                "sectionButtons"
+            ]
+        },
+        "pageShortcuts": {
+            "type": "page",
+            "title": "Shortcuts",
+            "sections": [
+                "sectionKeys"
+            ]
+        },
+        "sectionHistory": {
+            "type": "section",
+            "title": "History",
+            "keys": [
+                "history-size",
+                "cache-images",
+                "cache-only-favorites",
+                "clear-on-boot"
+            ]
+        },
+        "sectionBehaviour": {
+            "type": "section",
+            "title": "Behaviour",
+            "keys": [
+                "move-item-first",
+                "strip-text",
+                "paste-on-select",
+                "paste-keys",
+                "keep-selected-on-clear",
+                "confirm-clear",
+                "confirm-pinned-delete"
+            ]
+        },
+        "sectionPrivacy": {
+            "type": "section",
+            "title": "Privacy",
+            "keys": [
+                "private-mode",
+                "excluded-apps"
+            ]
+        },
+        "sectionPanel": {
+            "type": "section",
+            "title": "Panel",
+            "keys": [
+                "display-mode",
+                "topbar-preview-size"
+            ]
+        },
+        "sectionMenu": {
+            "type": "section",
+            "title": "Menu",
+            "keys": [
+                "preview-size",
+                "show-search-bar",
+                "case-sensitive-search",
+                "pinned-on-bottom",
+                "show-private-mode",
+                "show-clear-history-button",
+                "show-settings-button"
+            ]
+        },
+        "sectionButtons": {
+            "type": "section",
+            "title": "Item buttons",
+            "keys": [
+                "show-pin-button",
+                "show-paste-button",
+                "show-edit-button",
+                "show-tag-button",
+                "show-delete-button"
+            ]
+        },
+        "sectionKeys": {
+            "type": "section",
+            "title": "Keyboard shortcuts",
+            "keys": [
+                "toggle-menu-key",
+                "popup-location",
+                "next-entry-key",
+                "prev-entry-key",
+                "clear-history-key",
+                "private-mode-key",
+                "notify-on-cycle",
+                "notify-on-copy",
+                "notify-on-clear"
+            ]
+        },
+        "pageStorage": {
+            "type": "page",
+            "title": "Storage & security",
+            "sections": [
+                "sectionStorage",
+                "sectionEncryption"
+            ]
+        },
+        "sectionStorage": {
+            "type": "section",
+            "title": "Storage",
+            "keys": [
+                "storage-dir",
+                "open-storage-dir"
+            ]
+        },
+        "sectionEncryption": {
+            "type": "section",
+            "title": "Encryption",
+            "keys": [
+                "encryption-mode",
+                "encrypt-images",
+                "encryption-help-session",
+                "encryption-help-password",
+                "change-password"
+            ]
+        }
+    },
+    "history-size": {
+        "type": "spinbutton",
+        "default": 25,
+        "min": 1,
+        "max": 1000,
+        "step": 1,
+        "units": "entries",
+        "description": "Number of entries to keep",
+        "tooltip": "Pinned entries are kept regardless of this limit."
+    },
+    "cache-images": {
+        "type": "switch",
+        "default": true,
+        "description": "Record images",
+        "tooltip": "Add copied images to history and store them in the history folder."
+    },
+    "cache-only-favorites": {
+        "type": "switch",
+        "default": false,
+        "description": "Only save pinned entries to disk",
+        "tooltip": "Unpinned history is kept in memory only and is lost when Cinnamon restarts."
+    },
+    "clear-on-boot": {
+        "type": "switch",
+        "default": false,
+        "description": "Clear history when Cinnamon starts"
+    },
+    "move-item-first": {
+        "type": "switch",
+        "default": false,
+        "description": "Move an entry to the top when it is used"
+    },
+    "strip-text": {
+        "type": "switch",
+        "default": false,
+        "description": "Trim whitespace around copied text"
+    },
+    "paste-on-select": {
+        "type": "switch",
+        "default": false,
+        "description": "Paste immediately when an entry is chosen",
+        "tooltip": "Sends a paste keystroke to the focused window after copying."
+    },
+    "paste-keys": {
+        "type": "combobox",
+        "default": "ctrl-v",
+        "description": "Keystroke used to paste",
+        "options": {
+            "Ctrl+V": "ctrl-v",
+            "Shift+Insert": "shift-insert",
+            "Ctrl+Shift+V": "ctrl-shift-v"
+        },
+        "dependency": "paste-on-select"
+    },
+    "keep-selected-on-clear": {
+        "type": "switch",
+        "default": false,
+        "description": "Keep the current clipboard entry when clearing history"
+    },
+    "confirm-clear": {
+        "type": "switch",
+        "default": true,
+        "description": "Ask before clearing history"
+    },
+    "confirm-pinned-delete": {
+        "type": "switch",
+        "default": true,
+        "description": "Ask before deleting a pinned entry"
+    },
+    "private-mode": {
+        "type": "switch",
+        "default": false,
+        "description": "Private mode",
+        "tooltip": "While private mode is on, nothing new is recorded."
+    },
+    "excluded-apps": {
+        "type": "entry",
+        "default": "",
+        "description": "Never record from these windows",
+        "tooltip": "Comma separated WM_CLASS values, for example: KeePassXC, Bitwarden"
+    },
+    "display-mode": {
+        "type": "combobox",
+        "default": 0,
+        "description": "Panel button shows",
+        "options": {
+            "Icon only": 0,
+            "Clipboard contents only": 1,
+            "Icon and clipboard contents": 2
+        }
+    },
+    "topbar-preview-size": {
+        "type": "spinbutton",
+        "default": 15,
+        "min": 1,
+        "max": 100,
+        "step": 1,
+        "units": "characters",
+        "description": "Panel preview length"
+    },
+    "preview-size": {
+        "type": "spinbutton",
+        "default": 50,
+        "min": 10,
+        "max": 200,
+        "step": 1,
+        "units": "characters",
+        "description": "Menu entry preview length"
+    },
+    "show-search-bar": {
+        "type": "switch",
+        "default": true,
+        "description": "Show the search box"
+    },
+    "case-sensitive-search": {
+        "type": "switch",
+        "default": false,
+        "description": "Case sensitive search",
+        "dependency": "show-search-bar"
+    },
+    "pinned-on-bottom": {
+        "type": "switch",
+        "default": false,
+        "description": "Show pinned entries below the history"
+    },
+    "show-private-mode": {
+        "type": "switch",
+        "default": true,
+        "description": "Show the private mode toggle"
+    },
+    "show-clear-history-button": {
+        "type": "switch",
+        "default": true,
+        "description": "Show the clear history button"
+    },
+    "show-settings-button": {
+        "type": "switch",
+        "default": true,
+        "description": "Show the settings button"
+    },
+    "show-pin-button": {
+        "type": "switch",
+        "default": true,
+        "description": "Pin"
+    },
+    "show-paste-button": {
+        "type": "switch",
+        "default": true,
+        "description": "Paste"
+    },
+    "show-edit-button": {
+        "type": "switch",
+        "default": true,
+        "description": "Edit"
+    },
+    "show-tag-button": {
+        "type": "switch",
+        "default": false,
+        "description": "Tag"
+    },
+    "show-delete-button": {
+        "type": "switch",
+        "default": true,
+        "description": "Delete"
+    },
+    "toggle-menu-key": {
+        "type": "keybinding",
+        "default": "<Super>v",
+        "description": "Open the clipboard menu"
+    },
+    "next-entry-key": {
+        "type": "keybinding",
+        "default": "",
+        "description": "Switch to the next entry"
+    },
+    "prev-entry-key": {
+        "type": "keybinding",
+        "default": "",
+        "description": "Switch to the previous entry"
+    },
+    "clear-history-key": {
+        "type": "keybinding",
+        "default": "",
+        "description": "Clear history"
+    },
+    "private-mode-key": {
+        "type": "keybinding",
+        "default": "",
+        "description": "Toggle private mode"
+    },
+    "notify-on-cycle": {
+        "type": "switch",
+        "default": true,
+        "description": "Notify when switching entries with a shortcut"
+    },
+    "notify-on-copy": {
+        "type": "switch",
+        "default": false,
+        "description": "Notify on every copy"
+    },
+    "notify-on-clear": {
+        "type": "switch",
+        "default": true,
+        "description": "Notify when history is cleared"
+    },
+    "storage-dir": {
+        "type": "filechooser",
+        "select-dir": true,
+        "default": "",
+        "description": "History folder",
+        "tooltip": "Where history and cached images are kept. Changing it moves the existing history to the new folder, which must not already contain clipboard history."
+    },
+    "open-storage-dir": {
+        "type": "button",
+        "description": "Open history folder",
+        "callback": "on_open_storage_dir"
+    },
+    "encryption-mode": {
+        "type": "combobox",
+        "default": "session",
+        "description": "Encrypt stored history",
+        "options": {
+            "Off": "none",
+            "New random key every login": "session",
+            "Password": "password"
+        }
+    },
+    "encryption-help-session": {
+        "type": "label",
+        "description": "A new key is read from /dev/urandom each time Cinnamon starts and is never written to disk. History, including pinned entries, cannot be recovered after a restart.",
+        "dependency": "encryption-mode=session"
+    },
+    "encryption-help-password": {
+        "type": "label",
+        "description": "You are asked for the password once per login, from the applet menu, before saved history is shown. Anything copied before then is kept in memory and saved after unlocking. A forgotten password cannot be recovered.",
+        "dependency": "encryption-mode=password"
+    },
+    "change-password": {
+        "type": "button",
+        "description": "Change password\u2026",
+        "callback": "on_change_password",
+        "dependency": "encryption-mode=password"
+    },
+    "popup-location": {
+        "type": "combobox",
+        "default": "panel",
+        "description": "Keyboard shortcut opens",
+        "options": {
+            "The panel menu": "panel",
+            "A movable window under the pointer": "pointer"
+        },
+        "tooltip": "Clicking the panel icon always opens the panel menu. Drag the window by its title bar."
+    },
+    "encrypt-images": {
+        "type": "switch",
+        "default": false,
+        "description": "Also encrypt images (slow)",
+        "dependency": "encryption-mode!=none",
+        "tooltip": "Off by default: images are stored unencrypted even when text is encrypted. Encryption runs on Cinnamon's main thread at roughly 180 ms per megabyte, so the desktop can freeze for about a second when copying or pasting a large screenshot. Turning this on or off re-writes every stored image."
+    }
+}

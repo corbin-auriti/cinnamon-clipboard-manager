@@ -1,0 +1,96 @@
+.clipboard-menu {
+    min-width: 380px;
+    max-width: 600px;
+}
+
+.clipboard-search-entry {
+    margin: 6px 8px;
+    padding: 4px 8px;
+    min-width: 260px;
+}
+
+.clipboard-scrollview {
+    max-height: 380px;
+}
+
+.clipboard-item-box {
+    spacing: 6px;
+    padding: 1px 0;
+}
+
+.clipboard-item-selected-icon {
+    width: 12px;
+    height: 12px;
+}
+
+.clipboard-item-preview {
+    padding: 2px 0;
+}
+
+.clipboard-item-label {
+    padding-right: 8px;
+}
+
+.clipboard-item-tag {
+    padding: 0 6px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    background-color: rgba(127, 127, 127, 0.28);
+}
+
+.clipboard-item-buttons {
+    spacing: 2px;
+}
+
+.clipboard-item-button {
+    padding: 2px 4px;
+    border-radius: 4px;
+    opacity: 0.65;
+}
+
+.clipboard-item-button:hover,
+.clipboard-item-button:focus {
+    opacity: 1;
+    background-color: rgba(127, 127, 127, 0.25);
+}
+
+.clipboard-item-button:active {
+    opacity: 1;
+}
+
+.clipboard-empty-label {
+    padding: 14px 10px;
+    text-align: center;
+    opacity: 0.7;
+}
+
+.clipboard-dialog-title {
+    font-weight: bold;
+    padding-bottom: 8px;
+}
+
+.clipboard-dialog-entry {
+    padding: 6px 8px;
+}
+
+.clipboard-dialog-error {
+    padding-top: 6px;
+    color: #ed6a5e;
+}
+
+.clipboard-dialog-message {
+    max-width: 420px;
+}
+
+.clipboard-floating {
+    min-width: 380px;
+}
+
+.clipboard-floating-header {
+    spacing: 8px;
+    padding: 4px 6px 6px 8px;
+}
+
+.clipboard-floating-title {
+    font-weight: bold;
+}

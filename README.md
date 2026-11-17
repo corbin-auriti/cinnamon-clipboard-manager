@@ -1,8 +1,18 @@
 # clipboard-manager@ravetcofx — local fork
 
-Working copy of the Cinnamon Clipboard Manager applet (a port of GNOME
-Shell's Clipboard Indicator). The code is developed here and deployed to
+Clipboard history manager applet for Cinnamon: history with pinning,
+search, tags, image support, per-session or password encryption, and a
+Super+V popup. The code is developed here and deployed to
 `~/.local/share/cinnamon/applets/clipboard-manager@ravetcofx/`.
+
+## Origins and credits
+
+This applet is a port of the GNOME Shell extension
+[Clipboard Indicator](https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator)
+by Tudmotu (Yotam Bar-On), from which it inherits its feature set and
+naming, and to which generic improvements are contributed back upstream.
+It is offered under the same MIT license (see [LICENSE](LICENSE)), which
+retains the original copyright notice.
 
 ## Layout
 
